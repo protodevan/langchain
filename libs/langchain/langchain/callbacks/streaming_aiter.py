@@ -28,8 +28,10 @@ class AsyncIteratorCallbackHandler(AsyncCallbackHandler):
     async def on_llm_start(
         self, serialized: dict[str, Any], prompts: list[str], **kwargs: Any
     ) -> None:
+        """Reset internal state before a new LLM run."""
         # If two calls are made in a row, this resets the state
-        self.done.clear()
+        self.queue = asyncio.Queue()
+        self.done = asyncio.Event()
 
     async def on_llm_new_token(self, token: str, **kwargs: Any) -> None:
         if token is not None and token != "":
